@@ -132,7 +132,7 @@ public class MainUI extends JFrame {
             icon = currentRecommendedFood.getPreference().isLiked() ? " 👍" : " 👎";
         }
 
-        resultLabel.setFont(new Font("Noto Color Emoji", Font.PLAIN, 20));
+        resultLabel.setFont(new Font("Noto Color Emoji", Font.PLAIN, 16));
         resultLabel.setText("오늘의 추천: " + currentRecommendedFood.getName()
                 + " (" + currentRecommendedFood.getRestaurant() + ")" + icon);
     }
