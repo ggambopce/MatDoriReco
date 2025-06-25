@@ -2,12 +2,31 @@ package model;
 
 public class Food {
     // 필드 생성
+    int id;
+
+
+
     String name;
     String restaurant;
     Category category;
     Preference preference;
 
+    // 기본 생성자 생성(JDBC 매핑)
+    public Food() {}
+
+    // db 조회용 생성자 생성
+    public Food(int id, String name, String restaurant, Category category, Preference preference){
+        this.id = id;
+        this.name = name;
+        this.restaurant = restaurant;
+        this.category = category;
+        this.preference = preference;
+    }
+
     // 자료구조내 사용 getter,setter
+    public int getId() {return id;}
+
+    public void setId(int id) {this.id = id;}
     public String getName() {return name;}
     public void setName(String name) {this.name = name;}
 
@@ -24,16 +43,7 @@ public class Food {
     @Override
     public String toString() {return "Food{" + "name='" + name + '\'' + ", restaurant='" + restaurant + '\'' + ", category=" + category + ", preference=" + preference + '}';}
 
-    // 기본 생성자 생성(JDBC 매핑)
-    public Food() {}
 
-    // 생성자 생성
-    public Food(String name, String restaurant, Category category, Preference preference){
-        this.name = name;
-        this.restaurant = restaurant;
-        this.category = category;
-        this.preference = preference;
-    }
 
     public enum Category { KOREAN, JAPANESE, CHINESE, WESTERN, SNACK }
 
