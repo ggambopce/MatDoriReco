@@ -1,0 +1,18 @@
+2025-06-25 09:59:23.032256+09:00 jdbc[4]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "CREATE TABLE food (\000d\000a    id INTEGER PRIMARY KEY [*]AUTOINCREMENT,\000d\000a    name TEXT NOT NULL,\000d\000a    restaurant TEXT,\000d\000a    category TEXT CHECK (category IN ('KOREAN', 'JAPANESE', 'CHINESE', 'WESTERN', 'SNACK')),\000d\000a    liked BOOLEAN DEFAULT TRUE\000d\000a)"; expected "HASH, CONSTRAINT, COMMENT, UNIQUE, NOT NULL, CHECK, REFERENCES, ,, )"; SQL statement:
+CREATE TABLE food (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    restaurant TEXT,
+    category TEXT CHECK (category IN ('KOREAN', 'JAPANESE', 'CHINESE', 'WESTERN', 'SNACK')),
+    liked BOOLEAN DEFAULT TRUE
+) [42001-232]
+2025-06-25 10:02:06.435322+09:00 jdbc[4]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "CREATE TABLE food (\000d\000a    id INT PRIMARY KEY [*]IDENTITY,\000d\000a    name VARCHAR(100) NOT NULL,\000d\000a    restaurant VARCHAR(100),\000d\000a    category VARCHAR(20) CHECK (category IN ('KOREAN', 'JAPANESE', 'CHINESE', 'WESTERN', 'SNACK')),\000d\000a    liked BOOLEAN DEFAULT TRUE\000d\000a)"; expected "HASH, CONSTRAINT, COMMENT, UNIQUE, NOT NULL, CHECK, REFERENCES, ,, )"; SQL statement:
+CREATE TABLE food (
+    id INT PRIMARY KEY IDENTITY,
+    name VARCHAR(100) NOT NULL,
+    restaurant VARCHAR(100),
+    category VARCHAR(20) CHECK (category IN ('KOREAN', 'JAPANESE', 'CHINESE', 'WESTERN', 'SNACK')),
+    liked BOOLEAN DEFAULT TRUE
+) [42001-232]

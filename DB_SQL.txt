@@ -1,0 +1,35 @@
+H2 데이터 베이스 SQL
+
+# food 테이블 생성
+CREATE TABLE food (
+    id INT PRIMARY KEY AUTO_INCREMENT, -- 또는 IDENTITY
+    name VARCHAR(100) NOT NULL,
+    restaurant VARCHAR(100),
+    category VARCHAR(20),
+    liked BOOLEAN DEFAULT TRUE
+);
+
+#
+
+# 더미 데이터 삽입
+INSERT INTO food (name, restaurant, category, liked) VALUES
+('김치찌개', '할매식당', 'KOREAN', TRUE),
+('된장찌개', '할매식당', 'KOREAN', TRUE),
+('비빔밥', '할매식당', 'KOREAN', TRUE),
+('불고기덮밥', '할매식당', 'KOREAN', TRUE),
+('돈까스정식', '명동식당', 'JAPANESE', TRUE),
+('가츠동', '명동식당', 'JAPANESE', TRUE),
+('소유라멘', '멘야산다이메', 'JAPANESE', TRUE),
+('냉우동', '멘야산다이메', 'JAPANESE', FALSE),
+('차돌짬뽕', '홍콩반점', 'CHINESE', TRUE),
+('삼선짜장', '홍콩반점', 'CHINESE', TRUE),
+('깐풍기', '중화루', 'CHINESE', TRUE),
+('고추잡채', '중화루', 'CHINESE', FALSE),
+('크림파스타', '이태리집', 'WESTERN', TRUE),
+('토마토리조또', '이태리집', 'WESTERN', TRUE),
+('치즈버거', '버거킹', 'WESTERN', FALSE),
+('페퍼로니피자', '피자스쿨', 'WESTERN', TRUE),
+('로제떡볶이', '엽기떡볶이', 'SNACK', TRUE),
+('참치김밥', '김밥천국', 'SNACK', TRUE),
+('라면정식', '라면천국', 'SNACK', FALSE),
+('순대국밥', '분식나라', 'SNACK', TRUE);
