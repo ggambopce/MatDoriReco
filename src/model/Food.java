@@ -43,7 +43,22 @@ public class Food {
     @Override
     public String toString() {return "Food{" + "name='" + name + '\'' + ", restaurant='" + restaurant + '\'' + ", category=" + category + ", preference=" + preference + '}';}
 
+    // 좋아요/싫어요 제어 메서드 추가
+    public void like() {
+        if (this.preference == null) {
+            this.preference = new Preference(true);
+        } else {
+            this.preference.setLiked(true);
+        }
+    }
 
+    public void dislike() {
+        if (this.preference == null) {
+            this.preference = new Preference(false);
+        } else {
+            this.preference.setLiked(false);
+        }
+    }
 
     public enum Category { KOREAN, JAPANESE, CHINESE, WESTERN, SNACK }
 
@@ -57,6 +72,12 @@ public class Food {
 
         public boolean isLiked() {return liked;}
         public void setLiked(boolean liked) {this.liked = liked;}
+
+        @Override
+        public String toString() {
+            return "Preference{liked=" + liked + "}";
+        }
+
 
     }
 }

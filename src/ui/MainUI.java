@@ -17,9 +17,11 @@ public class MainUI extends JFrame {
     private JLabel resultLabel;
     private JTextArea logArea;
 
+
     private DBManager dbManager;
     private Recommender recommender;
 
+    private Food currentRecommendedFood;  // 현재 추천된 음식
     public MainUI() {
         Font emojiFont = new Font("Noto Color Emoji", Font.PLAIN, 14);
         UIManager.put("Button.font", emojiFont);
@@ -87,20 +89,52 @@ public class MainUI extends JFrame {
             Food recommendation = recommender.recommendBaseLikedAnd3Day(foods, logs);
 
             if (recommendation != null) {
-                resultLabel.setText("오늘의 추천: " + recommendation.getName()
-                        + " (" + recommendation.getRestaurant() + ")");
+                currentRecommendedFood = recommendation; // 현재 추천 음식 저장
+                updateResultLabel(); // 좋아요 상태표시
                 logArea.append("추천: " + recommendation.getName()
-                        + " (" + recommendation.getCategory() + ") by "
+                        + " (" + recommendation.getCategory() + ") from "
                         + recommendation.getRestaurant() + "\n");
             } else {
                 resultLabel.setText("추천할 음식이 없습니다.");
             }
         });
 
+        // ===== 좋아요 싫어요 동작 구현 =====
+        likeButton.addActionListener(e -> {
+            if (currentRecommendedFood != null) {
+                currentRecommendedFood.like(); // 모델 메서드 호출
+                updateResultLabel();
+                logArea.append("👍 좋아요 선택됨: " + currentRecommendedFood.getName() + "\n");
+            } else {
+                logArea.append("추천된 음식이 없습니다.\n");
+            }
+        });
+
+        dislikeButton.addActionListener(e -> {
+            if (currentRecommendedFood != null) {
+                currentRecommendedFood.dislike();
+                updateResultLabel();
+                logArea.append("👎 싫어요 선택됨: " + currentRecommendedFood.getName() + "\n");
+            } else {
+                logArea.append("추천된 음식이 없습니다.\n");
+            }
+        });
+
         setVisible(true);
     }
 
-    public static void main(String[] args) {
-        new MainUI();
+    // 추천 결과 라벨에 👍👎 포함해서 업데이트
+    private void updateResultLabel() {
+        if (currentRecommendedFood == null) return;
+
+        String icon = "";
+        if (currentRecommendedFood.getPreference() != null) {
+            icon = currentRecommendedFood.getPreference().isLiked() ? " 👍" : " 👎";
+        }
+
+        resultLabel.setFont(new Font("Noto Color Emoji", Font.PLAIN, 20));
+        resultLabel.setText("오늘의 추천: " + currentRecommendedFood.getName()
+                + " (" + currentRecommendedFood.getRestaurant() + ")" + icon);
     }
+
 }
