@@ -1,8 +1,10 @@
 package db;
 
 import model.Food;
+import model.MealLog;
 
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,24 +47,48 @@ public class DBManager {
             throw new RuntimeException(e);
         } finally {
             // 자원 해제
-            if (rs != null) {
-                try {
-                    rs.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-            if (stmt != null) {
-                try {
-                    stmt.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
+            try {
+                if (rs != null) rs.close(); // rs가 null이 아니면 닫기
+                if (stmt != null) stmt.close(); // stmt가 null이 아니면 닫기
+            } catch (SQLException e) {
+                e.printStackTrace(); // 닫기 실패 시 예외 출력
             }
         }
         return list;
     }
 
+    // 모든 식사 기록을 log테이블에서 조회
+    public List<MealLog> getAllMealLog() {
+        List<MealLog> logs = new ArrayList<>();
+        String sql = "SELECT * FROM meal_log";
+        Statement stmt = null;
+        ResultSet rs = null;
 
+        try {
+            stmt = conn.createStatement();
+            rs = stmt.executeQuery(sql);
+
+            while (rs.next()) {
+                int id = rs.getInt("id");
+                int foodId = rs.getInt("food_id");
+                LocalDate eatenDate = rs.getDate("eaten_date").toLocalDate();
+                String mealType = rs.getString("meal_type");
+
+                MealLog log = new MealLog(id, foodId, eatenDate, mealType);
+                    logs.add(log); // 리스트에 추가
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } finally {
+            // 자원 해제
+            try {
+                if (rs != null) rs.close(); // rs가 null이 아니면 닫기
+                if (stmt != null) stmt.close(); // stmt가 null이 아니면 닫기
+            } catch (SQLException e) {
+                e.printStackTrace(); // 닫기 실패 시 예외 출력
+            }
+        }
+        return logs;
+    }
 
 }

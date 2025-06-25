@@ -9,9 +9,18 @@ CREATE TABLE food (
     liked BOOLEAN DEFAULT TRUE
 );
 
-#
+# meal_log 테이블 생성
+CREATE TABLE meal_log (
+    id INT PRIMARY KEY AUTO_INCREMENT,         -- 자동 증가 기본키
+    food_id INT,                               -- 외래키로 연결될 음식 ID
+    eaten_date DATE,                           -- 먹은 날짜
+    meal_type VARCHAR(10),                     -- 식사 종류 (점심', '저녁' )
 
-# 더미 데이터 삽입
+    -- H2에서 외래키 설정 (food 테이블이 먼저 생성되어 있어야 함)
+    FOREIGN KEY (food_id) REFERENCES food(id)
+);
+
+# Food 더미 데이터 삽입
 INSERT INTO food (name, restaurant, category, liked) VALUES
 ('김치찌개', '할매식당', 'KOREAN', TRUE),
 ('된장찌개', '할매식당', 'KOREAN', TRUE),
@@ -33,3 +42,26 @@ INSERT INTO food (name, restaurant, category, liked) VALUES
 ('참치김밥', '김밥천국', 'SNACK', TRUE),
 ('라면정식', '라면천국', 'SNACK', FALSE),
 ('순대국밥', '분식나라', 'SNACK', TRUE);
+
+# meal_log 더미 데이터 20개 삽입
+INSERT INTO meal_log (food_id, eaten_date, meal_type) VALUES
+(1, DATEADD('DAY', -1, CURRENT_DATE), '점심'),
+(2, DATEADD('DAY', -2, CURRENT_DATE), '저녁'),
+(3, DATEADD('DAY', -3, CURRENT_DATE), '아침'),
+(4, DATEADD('DAY', -4, CURRENT_DATE), '점심'),
+(5, DATEADD('DAY', -5, CURRENT_DATE), '저녁'),
+(6, DATEADD('DAY', -6, CURRENT_DATE), '아침'),
+(7, DATEADD('DAY', -7, CURRENT_DATE), '점심'),
+(8, DATEADD('DAY', -8, CURRENT_DATE), '저녁'),
+(9, DATEADD('DAY', -9, CURRENT_DATE), '아침'),
+(10, DATEADD('DAY', -10, CURRENT_DATE), '점심'),
+(11, DATEADD('DAY', -11, CURRENT_DATE), '저녁'),
+(12, DATEADD('DAY', -12, CURRENT_DATE), '아침'),
+(13, DATEADD('DAY', -13, CURRENT_DATE), '점심'),
+(14, DATEADD('DAY', -14, CURRENT_DATE), '저녁'),
+(15, DATEADD('DAY', -15, CURRENT_DATE), '아침'),
+(16, DATEADD('DAY', -16, CURRENT_DATE), '점심'),
+(17, DATEADD('DAY', -17, CURRENT_DATE), '저녁'),
+(18, DATEADD('DAY', -18, CURRENT_DATE), '아침'),
+(19, DATEADD('DAY', -19, CURRENT_DATE), '점심'),
+(20, DATEADD('DAY', -20, CURRENT_DATE), '저녁');
