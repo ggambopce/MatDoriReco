@@ -56,28 +56,37 @@ public class Recommender {
 
     }
     /** SET 추천
-     *
+     * 중복 회피
+     * 사용자가 "싫어요" 표시한 음식 ID를 Set으로 구성
+     * 사용자가 싫어요 표시한 음식은 빠르게 제외하고 추천
      */
     public Food recommendBySet(){
         return null;
     }
 
     /** Map 추천
-     *
+     * key값 별 추천
+     * 카테고리별 섭취 횟수 Map 생성 많이 먹은 카테고리는 제외 → 편중 방지
      */
     public Food recommendByMap(){
         return null;
     }
 
     /** Queue 추천
-     *
+     * 선입선출
+     * 섭취 기록이 적은 음식일수록 우선순위 높게 설정
+     * PriorityQueue로 빈도 기반 정렬
+     * 선입선출 로직 적용
      */
     public Food recommendByQueue(){
         return null;
     }
 
     /** STACK 추천
-     *
+     * 후입선출
+     * 최근 먹은 음식을 Stack에 쌓고,
+     * 가장 마지막에 먹은 음식부터 하나씩 꺼내며
+     * 관련 추천을 하거나 중복 섭취를 피할 수 있도록 안내하는 로직.
      */
     public Food recommendByStack(){
         return null;

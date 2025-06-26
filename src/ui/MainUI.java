@@ -22,13 +22,18 @@ public class MainUI extends JFrame {
     private Recommender recommender;
 
     private Food currentRecommendedFood;  // 현재 추천된 음식
-    public MainUI() {
+
+    public void appendLog(String message) {
+        logArea.append(message + "\n");
+    }
+    // 생성자 주입 생성자
+    public MainUI(DBManager dbManager, Recommender recommender) {
+        this.dbManager = dbManager;           // 주입받은 인스턴스 저장
+        this.recommender = recommender;       // 주입받은 인스턴스 저장
+
         Font emojiFont = new Font("Noto Color Emoji", Font.PLAIN, 14);
         UIManager.put("Button.font", emojiFont);
         UIManager.put("Label.font", emojiFont);
-
-        dbManager = new DBManager();
-        recommender = new Recommender();
 
         setTitle("\uD83C\uDF7D DJU Matdori");
         setSize(500, 400);
@@ -145,8 +150,6 @@ public class MainUI extends JFrame {
             // 4. 로그 표시
             logArea.append("🍴 오늘 먹은 것으로 기록됨: " + currentRecommendedFood.getName() + " (" + mealType + ")\n");
         });
-
-
 
 
         setVisible(true);
