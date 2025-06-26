@@ -10,7 +10,7 @@ import java.util.Random;
 
 public class Recommender {
 
-    /**
+    /** LIST 추천
      * 좋아요 + 최근 3일 먹은 음식 제외하고 1개 추천
      * @param allFoods 전체 음식 목록
      * @param allLogs 전체 식사 기록 목록
@@ -55,5 +55,33 @@ public class Recommender {
         return null;
 
     }
+    /** SET 추천
+     *
+     */
+    public Food recommendBySet(){
+        return null;
+    }
+
+    /** Map 추천
+     *
+     */
+    public Food recommendByMap(){
+        return null;
+    }
+
+    /** Queue 추천
+     *
+     */
+    public Food recommendByQueue(){
+        return null;
+    }
+
+    /** STACK 추천
+     *
+     */
+    public Food recommendByStack(){
+        return null;
+    }
+
 
 }

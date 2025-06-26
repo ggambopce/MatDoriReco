@@ -120,8 +120,39 @@ public class MainUI extends JFrame {
             }
         });
 
+        // ===== 오늘 먹었어요 동작 구현 =====
+        eatenButton.addActionListener(e -> {
+            if (currentRecommendedFood == null) {
+                logArea.append("추천된 음식이 없습니다.\n");
+                return;
+            }
+
+            // 1. 콤보박스에서 현재 선택된 식사 유형 (점심/저녁)
+            String selected = (String) mealTypeCombo.getSelectedItem();
+            String mealType = selected.equals("점심") ? "LUNCH" : "DINNER";
+
+            // 2. MealLog 객체 생성
+            MealLog log = new MealLog(
+                    0,                                // ID는 auto_increment
+                    currentRecommendedFood.getId(),  // 음식 ID
+                    java.time.LocalDate.now(),       // 오늘 날짜
+                    mealType                         // 식사 유형
+            );
+
+            // 3. DB에 저장
+            dbManager.saveMealLog(log);
+
+            // 4. 로그 표시
+            logArea.append("🍴 오늘 먹은 것으로 기록됨: " + currentRecommendedFood.getName() + " (" + mealType + ")\n");
+        });
+
+
+
+
         setVisible(true);
     }
+
+
 
     // 추천 결과 라벨에 👍👎 포함해서 업데이트
     private void updateResultLabel() {

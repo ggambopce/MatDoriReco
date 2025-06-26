@@ -91,4 +91,30 @@ public class DBManager {
         return logs;
     }
 
+    // 오늘 먹었어요 식사 기록 저장 메서드
+    public void saveMealLog(MealLog log) {
+        String sql = "INSERT INTO meal_log (food_id, eaten_date, meal_type) VALUES (?, ?, ?)";
+        PreparedStatement pstmt = null;
+
+        try {
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1, log.getFoodId());
+            pstmt.setDate(2, Date.valueOf(log.getEatenDate()));
+            pstmt.setString(3, log.getMealType());
+
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            // 자원 해제
+            try {
+                if (pstmt != null) pstmt.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+
+
 }
