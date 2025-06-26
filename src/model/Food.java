@@ -3,9 +3,6 @@ package model;
 public class Food {
     // 필드 생성
     int id;
-
-
-
     String name;
     String restaurant;
     Category category;

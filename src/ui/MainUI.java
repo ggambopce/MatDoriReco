@@ -22,9 +22,13 @@ public class MainUI extends JFrame {
     private Recommender recommender;
 
     private Food currentRecommendedFood;  // 현재 추천된 음식
+    private JComboBox<String> strategyComboBox;
+    private JLabel strategyDescriptionLabel;
+
 
     public void appendLog(String message) {
         logArea.append(message + "\n");
+        logArea.setCaretPosition(logArea.getDocument().getLength());
     }
     // 생성자 주입 생성자
     public MainUI(DBManager dbManager, Recommender recommender) {
@@ -56,8 +60,10 @@ public class MainUI extends JFrame {
         // ===== 콤보박스 + 추천 버튼 (가로) =====
         JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         mealTypeCombo = new JComboBox<>(new String[]{"점심", "저녁"});
+        strategyComboBox = new JComboBox<>(new String[]{"LIST", "SET", "MAP", "QUEUE", "STACK"});
         recommendButton = new JButton("추천받기");
         topPanel.add(mealTypeCombo);
+        topPanel.add(strategyComboBox);
         topPanel.add(recommendButton);
         add(topPanel);
 
@@ -66,6 +72,13 @@ public class MainUI extends JFrame {
         resultLabel.setFont(new Font("맑은 고딕", Font.PLAIN, 16));
         resultLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         add(resultLabel);
+
+        // ===== 전략 설명 라벨 =====
+        strategyDescriptionLabel = new JLabel("추천 전략을 선택해주세요.");
+        strategyDescriptionLabel.setFont(new Font("맑은 고딕", Font.PLAIN, 13));
+        strategyDescriptionLabel.setAlignmentX(Component.CENTER_ALIGNMENT);  // BoxLayout 정렬
+        strategyDescriptionLabel.setHorizontalAlignment(SwingConstants.CENTER);  // 텍스트 정렬
+        add(strategyDescriptionLabel);
 
         add(Box.createVerticalStrut(10)); // 간격
 
@@ -91,12 +104,32 @@ public class MainUI extends JFrame {
         recommendButton.addActionListener((ActionEvent e) -> {
             List<Food> foods = dbManager.getAllFoods();
             List<MealLog> logs = dbManager.getAllMealLog();
-            Food recommendation = recommender.recommendBaseLikedAnd3Day(foods, logs);
+            String strategy = (String) strategyComboBox.getSelectedItem();  // 전략 선택
+
+            Food recommendation = null;
+
+            switch (strategy) {
+                case "LIST":
+                    recommendation = recommender.recommendBaseLikedAnd3Day(foods, logs);
+                    break;
+                case "SET":
+                    recommendation = recommender.recommendBySet(foods);
+                    break;
+                case "MAP":
+                    recommendation = recommender.recommendByMap(foods);
+                    break;
+                case "QUEUE":
+                    recommendation = recommender.recommendByQueue(foods, logs);
+                    break;
+                case "STACK":
+                    recommendation = recommender.recommendByStack(foods, logs);
+                    break;
+            }
 
             if (recommendation != null) {
-                currentRecommendedFood = recommendation; // 현재 추천 음식 저장
-                updateResultLabel(); // 좋아요 상태표시
-                logArea.append("추천: " + recommendation.getName()
+                currentRecommendedFood = recommendation;
+                updateResultLabel();
+                logArea.append("추천(" + strategy + "): " + recommendation.getName()
                         + " (" + recommendation.getCategory() + ") from "
                         + recommendation.getRestaurant() + "\n");
             } else {
@@ -151,11 +184,38 @@ public class MainUI extends JFrame {
             logArea.append("🍴 오늘 먹은 것으로 기록됨: " + currentRecommendedFood.getName() + " (" + mealType + ")\n");
         });
 
+        strategyComboBox.addActionListener(e -> {
+            String selected = (String) strategyComboBox.getSelectedItem();
+            String description;
+
+            switch (selected) {
+                case "LIST":
+                    description = "<html><div style='text-align:center;'><b>LIST :</b> 순차적 저장, 인덱스 접근<br>최근 2일간 먹은 음식 제외</div></html>";
+                    break;
+                case "SET":
+                    description = "<html><div style='text-align:center;'><b>SET :</b> 순서없음, 중복 제거<br>싫어요 표시한 음식 제외, 중복 회피</div></html>";
+                    break;
+                case "MAP":
+                    description = "<html><div style='text-align:center;'><b>MAP :</b> 키-값 쌍, Key는 중복 불가<br>편식 방지, 싫어요가 많은 카테고리 음식 추천</div></html>";
+                    break;
+                case "QUEUE":
+                    description = "<html><div style='text-align:center;'><b>QUEUE :</b> 선입선출 (FIFO)<br>적게 먹은 음식 우선 추천</div></html>";
+                    break;
+                case "STACK":
+                    description = "<html><div style='text-align:center;'><b>STACK :</b> 후입선출 (LIFO)<br>최근 먹은 음식 제외, 다른 카테고리 추천</div></html>";
+                    break;
+                default:
+                    description = "";
+            }
+
+
+
+            strategyDescriptionLabel.setText(description);
+        });
+
 
         setVisible(true);
     }
-
-
 
     // 추천 결과 라벨에 👍👎 포함해서 업데이트
     private void updateResultLabel() {
@@ -170,5 +230,4 @@ public class MainUI extends JFrame {
         resultLabel.setText("오늘의 추천: " + currentRecommendedFood.getName()
                 + " (" + currentRecommendedFood.getRestaurant() + ")" + icon);
     }
-
 }

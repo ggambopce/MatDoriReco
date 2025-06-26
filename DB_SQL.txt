@@ -63,7 +63,7 @@ INSERT INTO meal_log (food_id, eaten_date, meal_type) VALUES
 (13, DATEADD('DAY', -13, CURRENT_DATE), '점심'),
 (14, DATEADD('DAY', -14, CURRENT_DATE), '저녁'),
 (15, DATEADD('DAY', -15, CURRENT_DATE), '아침'),
-(16, DATEADD('DAY', -16, CURRENT_DATE), '점심'),
+-_(16, DATEADD('DAY', -16, CURRENT_DATE), '점심'),
 (17, DATEADD('DAY', -17, CURRENT_DATE), '저녁'),
 (18, DATEADD('DAY', -18, CURRENT_DATE), '아침'),
 (19, DATEADD('DAY', -19, CURRENT_DATE), '점심'),
