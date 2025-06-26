@@ -20,6 +20,9 @@ CREATE TABLE meal_log (
     FOREIGN KEY (food_id) REFERENCES food(id)
 );
 
+# 현재 ID = 20까지 있으므로 21부터 시작하도록 시퀀스를 재설정
+ALTER TABLE MEAL_LOG ALTER COLUMN ID RESTART WITH 21;
+
 # Food 더미 데이터 삽입
 INSERT INTO food (name, restaurant, category, liked) VALUES
 ('김치찌개', '할매식당', 'KOREAN', TRUE),

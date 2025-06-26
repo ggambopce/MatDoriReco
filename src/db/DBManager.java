@@ -93,20 +93,24 @@ public class DBManager {
 
     // 오늘 먹었어요 식사 기록 저장 메서드
     public void saveMealLog(MealLog log) {
-        String sql = "INSERT INTO meal_log (food_id, eaten_date, meal_type) VALUES (?, ?, ?)";
+        String insertSql = "INSERT INTO meal_log (food_id, eaten_date, meal_type) VALUES (?, ?, ?)";
         PreparedStatement pstmt = null;
 
         try {
-            pstmt = conn.prepareStatement(sql);
+            pstmt = conn.prepareStatement(insertSql);
             pstmt.setInt(1, log.getFoodId());
             pstmt.setDate(2, Date.valueOf(log.getEatenDate()));
             pstmt.setString(3, log.getMealType());
 
             pstmt.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
+            // 중복 삽입 등 예외 무시하거나 로깅
+            if (e.getErrorCode() == 23505) {  // H2의 Unique 제약 위반
+                System.out.println("이미 등록된 식사 기록입니다.");
+            } else {
+                e.printStackTrace();
+            }
         } finally {
-            // 자원 해제
             try {
                 if (pstmt != null) pstmt.close();
             } catch (SQLException e) {
@@ -114,6 +118,7 @@ public class DBManager {
             }
         }
     }
+
 
 
 
