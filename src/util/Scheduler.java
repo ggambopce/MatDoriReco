@@ -30,7 +30,7 @@ public class Scheduler extends Thread {
             if (true) { //now.getHour() == 11 || now.getHour() == 17
                 List<Food> foods = dbManager.getAllFoods();
                 List<MealLog> logs = dbManager.getAllMealLog();
-                Food recommendation = recommender.recommendBaseLikedAnd3Day(foods, logs);
+                Food recommendation = recommender.recommendByList(foods);
 
                 if (recommendation != null) {
                     SwingUtilities.invokeLater(() -> {

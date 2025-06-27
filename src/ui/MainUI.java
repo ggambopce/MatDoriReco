@@ -110,20 +110,21 @@ public class MainUI extends JFrame {
 
             switch (strategy) {
                 case "LIST":
-                    recommendation = recommender.recommendBaseLikedAnd3Day(foods, logs);
+                    recommendation = recommender.recommendByList(foods);
                     break;
                 case "SET":
-                    recommendation = recommender.recommendBySet(foods);
+                    recommendation = recommender.recommendBySet(foods, logs);
                     break;
                 case "MAP":
                     recommendation = recommender.recommendByMap(foods);
                     break;
-                case "QUEUE":
-                    recommendation = recommender.recommendByQueue(foods, logs);
-                    break;
                 case "STACK":
                     recommendation = recommender.recommendByStack(foods, logs);
                     break;
+                case "QUEUE":
+                    recommendation = recommender.recommendByQueue(foods, logs);
+                    break;
+
             }
 
             if (recommendation != null) {
@@ -190,19 +191,19 @@ public class MainUI extends JFrame {
 
             switch (selected) {
                 case "LIST":
-                    description = "<html><div style='text-align:center;'><b>LIST :</b> 순차적 저장, 인덱스 접근<br>최근 2일간 먹은 음식 제외</div></html>";
+                    description = "<html><div style='text-align:center;'><b>LIST :</b> 순차적 저장, 인덱스 접근<br>싫어요 표시한 음식 제외 후 랜덤 추천</div></html>";
                     break;
                 case "SET":
-                    description = "<html><div style='text-align:center;'><b>SET :</b> 순서없음, 중복 제거<br>싫어요 표시한 음식 제외, 중복 회피</div></html>";
+                    description = "<html><div style='text-align:center;'><b>SET :</b> 순서없음, 중복 제거<br>최근 3일간 먹은 음식 제외</div></html>";
                     break;
                 case "MAP":
                     description = "<html><div style='text-align:center;'><b>MAP :</b> 키-값 쌍, Key는 중복 불가<br>편식 방지, 싫어요가 많은 카테고리 음식 추천</div></html>";
                     break;
-                case "QUEUE":
-                    description = "<html><div style='text-align:center;'><b>QUEUE :</b> 선입선출 (FIFO)<br>적게 먹은 음식 우선 추천</div></html>";
-                    break;
                 case "STACK":
-                    description = "<html><div style='text-align:center;'><b>STACK :</b> 후입선출 (LIFO)<br>최근 먹은 음식 제외, 다른 카테고리 추천</div></html>";
+                    description = "<html><div style='text-align:center;'><b>STACK :</b> 후입선출 (LIFO)<br>최근 5번 먹은 음식 제외</div></html>";
+                    break;
+                case "QUEUE":
+                    description = "<html><div style='text-align:center;'><b>QUEUE :</b> 선입선출 (FIFO)<br>가장 적게 먹은 음식 우선 추천</div></html>";
                     break;
                 default:
                     description = "";

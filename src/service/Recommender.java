@@ -8,66 +8,16 @@ import java.util.*;
 
 public class Recommender {
 
+    private static final Random RANDOM = new Random();
+
     /** LIST 추천
-     * 최근 2일 먹은 음식 제외하고 1개 랜덤 추천
-     * @return 추천 음식 1개 (없으면 null)
+     * 싫어요 표시한 음식 제외 후 랜덤 추천
      */
-    public Food recommendBaseLikedAnd3Day(List<Food> allFoods, List<MealLog> allLogs) {
-
-        // 1. 최근 2일간 먹은 음식 ID 목록 만들기
-        List<Integer> recentFoodIds = new ArrayList<>();
-        LocalDate threeDaysAgo = LocalDate.now().minusDays(2);
-
-        for (int i = 0; i < allLogs.size(); i++) {
-            MealLog log = allLogs.get(i);
-            if (log.getEatenDate().isAfter(threeDaysAgo) || log.getEatenDate().isEqual(threeDaysAgo)) {
-                if (!recentFoodIds.contains(log.getFoodId())) {
-                    recentFoodIds.add(log.getFoodId());
-                }
-            }
-        }
-
-        // 2. 최근 2일간 먹지 않은 음식 후보 수집
+    public Food recommendByList(List<Food> allFoods) {
         List<Food> candidates = new ArrayList<>();
 
-        for (int i = 0; i < allFoods.size(); i++) {
-            Food food = allFoods.get(i);
-            boolean isRecentlyEaten = recentFoodIds.contains(food.getId());
-
-            if (!isRecentlyEaten) {
-                candidates.add(food);
-            }
-        }
-
-        // 3. 후보 리스트가 비어 있지 않으면 랜덤으로 하나 반환
-        if (!candidates.isEmpty()) {
-            Random random = new Random();
-            int index = random.nextInt(candidates.size()); // 0 이상 ~ size 미만
-            return candidates.get(index);
-        }
-
-        // 추천할 음식이 없을 경우 null 반환
-        return null;
-
-    }
-    /** SET 추천
-     * 중복 회피
-     * 사용자가 "싫어요" 표시한 음식 ID를 Set으로 구성
-     * 사용자가 싫어요 표시한 음식은 빠르게 제외하고 추천
-     */
-    public Food recommendBySet(List<Food> allFoods){
-        Set<Integer> dislikedIds = new HashSet<>();
-
         for (Food food : allFoods) {
-            if (!food.getPreference().isLiked()) {
-                dislikedIds.add(food.getId());
-            }
-        }
-
-        // 싫어요 아닌 음식 후보 추출
-        List<Food> candidates = new ArrayList<>();
-        for (Food food : allFoods) {
-            if (!dislikedIds.contains(food.getId())) {
+            if (food.getPreference() == null || food.getPreference().isLiked()) {
                 candidates.add(food);
             }
         }
@@ -76,12 +26,40 @@ public class Recommender {
             return candidates.get(new Random().nextInt(candidates.size()));
         }
         return null;
+    }
 
+    /** SET 추천
+     * 최근 3일간 먹은 음식 ID를 Set으로 저장하고,
+     * 해당 ID를 제외한 음식 중에서 무작위 추천
+     */
+    public Food recommendBySet(List<Food> allFoods, List<MealLog> allLogs ){
+        LocalDate threeDaysAgo = LocalDate.now().minusDays(3);
+
+        // 최근 2일간 먹은 음식 ID를 Set에 저장 (중복 제거)
+        Set<Integer> recentIds = new HashSet<>();
+        for (MealLog log : allLogs) {
+            if (!log.getEatenDate().isBefore(threeDaysAgo)) {
+                recentIds.add(log.getFoodId());
+            }
+        }
+
+        // 최근에 먹지 않은 음식만 후보로
+        List<Food> candidates = new ArrayList<>();
+        for (Food food : allFoods) {
+            if (!recentIds.contains(food.getId())) {
+                candidates.add(food);
+            }
+        }
+
+        if (!candidates.isEmpty()) {
+            return candidates.get(new Random().nextInt(candidates.size()));
+        }
+        return null;
     }
 
     /** Map 추천
      * key값 별 추천
-     * 싫어요가 많은 카테고리 음식 추천
+     * 싫어요가 많은 카테고리로를 묶은다음 해당 카테고리 무작위 추천
      * 편식방지
      */
     public Food recommendByMap(List<Food> allFoods) {
@@ -89,7 +67,7 @@ public class Recommender {
 
         // 1. 싫어요 음식만 필터링하고 카테고리별 분류
         for (Food food : allFoods) {
-            if (food.getPreference() != null && !food.getPreference().isLiked()) {
+            if (!food.getPreference().isLiked()) {
                 Food.Category category = food.getCategory();
 
                 if (!categoryMap.containsKey(category)) {
@@ -117,76 +95,89 @@ public class Recommender {
 
         // 3. 해당 카테고리에서 랜덤 음식 추천
         List<Food> candidates = categoryMap.get(maxCategory);
-        Random random = new Random();
-        return candidates.get(random.nextInt(candidates.size()));
-    }
 
-    /** Queue 추천
-     * 선입선출
-     * 섭취 기록이 적은 음식일수록 우선순위 높게 설정
-     * PriorityQueue로 빈도 기반 정렬
-     * 선입선출 로직 적용
-     */
-    public Food recommendByQueue(List<Food> allFoods, List<MealLog> allLogs){
-        Map<Integer, Integer> foodFrequency = new HashMap<>();
-
-        for (MealLog log : allLogs) {
-            int id = log.getFoodId();
-            foodFrequency.put(id, foodFrequency.getOrDefault(id, 0) + 1);
-        }
-
-        // 우선순위 큐 (먹은 횟수가 적은 음식 우선)
-        PriorityQueue<Food> queue = new PriorityQueue<>(
-                Comparator.comparingInt(food -> foodFrequency.getOrDefault(food.getId(), 0))
-        );
-
-        queue.addAll(allFoods);
-
-        return queue.isEmpty() ? null : queue.poll();
+        return candidates.get(RANDOM.nextInt(candidates.size()));
     }
 
     /** STACK 추천
-     * 후입선출
-     * 최근 먹은 음식을 Stack에 쌓고　제외
-     *　다른카테고리　추천
+     * 후입선출 최근 먹은 5개 음식 제외
+     * MealLog를 최신순 정렬해서 Stack에 모두 쌓기
+     * Stack에서 최근 5개 음식 ID를 꺼냄 (pop)
+     * 후보군 중에서 랜덤 추천
      */
     public Food recommendByStack(List<Food> allFoods, List<MealLog> allLogs){
-        Stack<Integer> recentFoodIds = new Stack<>();
+        if (allLogs == null || allLogs.isEmpty()) return null;
 
         // 1. 최신순 정렬
         allLogs.sort((a, b) -> b.getEatenDate().compareTo(a.getEatenDate()));
 
-        // 2. 최근 먹은 음식 ID를 중복 없이 Stack에 저장
+        // 2. Stack에 모든 foodId 쌓기 (중복 제거 X)
+        Stack<Integer> foodStack = new Stack<>();
         for (MealLog log : allLogs) {
-            if (!recentFoodIds.contains(log.getFoodId())) {
-                recentFoodIds.push(log.getFoodId());
+            foodStack.push(log.getFoodId());
+        }
+
+        // 3. 최근에 먹은 음식 5개 pop
+        Set<Integer> excludeIds = new HashSet<>();
+        int count = 0;
+        while (!foodStack.isEmpty() && count < 5) {
+            excludeIds.add(foodStack.pop());
+            count++;
+        }
+
+        // 4. 제외되지 않은 음식 추천
+        List<Food> candidates = new ArrayList<>();
+        for (Food food : allFoods) {
+            if (!excludeIds.contains(food.getId())) {
+                candidates.add(food);
             }
         }
 
-        // 3. 가장 최근에 먹은 음식부터 pop하여 그 카테고리를 기준으로 제외
-        while (!recentFoodIds.isEmpty()) {
-            int recentId = recentFoodIds.pop();
+        // 무작위 추출
+        if (!candidates.isEmpty()) {
+            return candidates.get(RANDOM.nextInt(candidates.size()));
+        }
 
-            // 최근에 먹은 음식 찾기
-            Food recentFood = allFoods.stream()
-                    .filter(f -> f.getId() == recentId)
-                    .findFirst()
-                    .orElse(null);
+        return null; // 추천할 음식이 없을 경우
+    }
 
-            if (recentFood != null) {
-                Food.Category recentCategory = recentFood.getCategory();
+    /** Queue 추천
+     * 선입선출 가장 오래전에 먹었던 음식 추천
+     * 순서가 보장된 List를 Queue로 감싸서
+     * 추천이력 저장소에 넣은뒤 추천할떄마다 변경
+     */
+    // 프로그램 실행 중 유지될 추천 이력 저장소
+    private final Set<Integer> recommendedIds = new HashSet<>();
+    public Food recommendByQueue(List<Food> allFoods, List<MealLog> allLogs){
+        if (allLogs == null || allLogs.isEmpty()) {
+            // 섭취 기록이 없다면 아무 음식이나 추천
+            return allFoods.isEmpty() ? null : allFoods.get(0);
+        }
 
-                // 다른 카테고리 음식 중 아무거나 추천
-                for (Food food : allFoods) {
-                    if (food.getCategory() != recentCategory) {
-                        return food;
-                    }
+        // 1. 순서 보장된 List를 Queue로 감싸기 (오래된 기록부터)
+        Queue<MealLog> eatenQueue = new LinkedList<>(allLogs);
+
+        // 2. FIFO 순서로 순회하면서 아직 추천 안된 음식 찾기
+        while (!eatenQueue.isEmpty()) {
+            MealLog oldestLog = eatenQueue.poll(); // 가장 먼저 먹은 기록
+            int foodId = oldestLog.getFoodId();
+
+            // 3. 이미 추천된 적 있는 음식은 스킵
+            if (recommendedIds.contains(foodId)) continue;
+
+            // 4. 해당 음식 ID를 찾아서 리턴
+            for (Food food : allFoods) {
+                if (food.getId() == foodId) {
+                    recommendedIds.add(foodId);  // 추천 이력 기록
+                    return food;
                 }
             }
         }
-
-        // 전부 같은 카테고리거나 추천할 게 없을 경우
+        // 5. 모든 음식이 이미 추천된 경우
         return null;
     }
+
+
+
 
 }

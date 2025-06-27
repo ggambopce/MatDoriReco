@@ -18,7 +18,7 @@ public class RecommenderTest {
         Recommender recommender = new Recommender();
 
         // 추천 로직 호출
-        Food recommended = recommender.recommendBaseLikedAnd3Day(foodList, logList);
+        Food recommended = recommender.recommendByList(foodList);
 
         // 결과 출력
         if (recommended != null) {
